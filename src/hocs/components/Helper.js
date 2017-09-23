@@ -14,8 +14,9 @@ export const Helper = WrappedComponent => {
       // maybe the element was not there yet
       // so we set an interval for searching it
       const { parent } = this.props
-      return document.querySelector(parent) ||
-        new Promise((resolve, reject) => {
+      console.log('parent', parent)
+      const parentElement = document.querySelector(parent) ||
+        await new Promise((resolve, reject) => {
           this.findParentElementInterval = setInterval(() => {
             const parentElement = document.querySelector(parent)
             if (parentElement) {
@@ -24,12 +25,13 @@ export const Helper = WrappedComponent => {
             }
           }, 100)
         })
+      return parentElement
     }
     async _getHelperElement () {
       // maybe the element was not there yet
       // so we set an interval for searching it
       return this.helperElement ||
-        new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
           this.findHelperElementInterval = setInterval(() => {
             if (this.helperElement) {
               clearInterval(this.findHelperElementInterval)
@@ -38,11 +40,10 @@ export const Helper = WrappedComponent => {
           }, 100)
         })
     }
-    componentDidMount () {
+    async componentDidMount () {
       if (this.props.isVisible) {
-        this.getParentElement().then(parentElement => {
-          this.setState({ parentElement })
-        })
+        const parentElement = await this.getParentElement()
+        this.setState({ parentElement })
       }
     }
     componentDidUpdate (prevProps) {
@@ -77,7 +78,8 @@ export const Helper = WrappedComponent => {
     }
     render () {
       return <WrappedComponent {...this.props}
-        state={this.state} />
+        state={this.state}
+        setHelperElement={_e => this.helperElement = _e} />
     }
   }
   return _Helper

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { findDOMNode } from 'react-dom'
 
 export const Helper = WrappedComponent => {
   class _Helper extends Component {
@@ -9,12 +10,12 @@ export const Helper = WrappedComponent => {
       }
       this.getHelperElement = this._getHelperElement.bind(this)
       this.getParentElement = this._getParentElement.bind(this)
+      this.setHelperElement = this._setHelperElement.bind(this)
     }
     async _getParentElement () {
       // maybe the element was not there yet
       // so we set an interval for searching it
       const { parent } = this.props
-      console.log('parent', parent)
       const parentElement = document.querySelector(parent) ||
         await new Promise((resolve, reject) => {
           this.findParentElementInterval = setInterval(() => {
@@ -41,20 +42,31 @@ export const Helper = WrappedComponent => {
         })
     }
     async componentDidMount () {
-      if (this.props.isVisible) {
-        const parentElement = await this.getParentElement()
-        this.setState({ parentElement })
+      const parentElement = await this.getParentElement()
+      /*
+      if (this.helperElement.parentElement) {
+        const helperParentElement = findDOMNode(this.helperElement.parentElement)
+        console.log('OUAI', helperParentElement, this.helperElement.parentElement, parentElement.offsetHeight)
+        helperParentElement.style.top = '500px'
       }
+      */
+      this.setState({ parentElement })
     }
-    componentDidUpdate (prevProps) {
+    async componentDidUpdate (prevProps) {
+      // unpack
       const { active,
         isFirefox,
         position,
         stepIndex
       } = this.props
-      const { hasScrolled,
-        parentElement
-      } = this.state
+      const { hasScrolled } = this.state
+      let parentElement = this.state.parentElement
+      // check that parent has changed or not
+      if (this.props.parent !== prevProps.parent) {
+        parentElement = await this.getParentElement()
+        this.setState({ parentElement })
+      }
+      // check for scrolling
       if (parentElement && !hasScrolled && active && stepIndex !== 0) {
         this.setState({ hasScrolled: true })
         this.getHelperElement().then(helperElement => {
@@ -65,8 +77,13 @@ export const Helper = WrappedComponent => {
               behavior: 'smooth',
               block: position === 'top' ? 'end' : 'start'
             })
+          //
+          console.log('WE FOUND IT !!!')
         })
       }
+    }
+    _setHelperElement (_e) {
+      this.helperElement = _e
     }
     componentWillUnmount () {
       if (this.findHelperElementInterval) {
@@ -77,9 +94,9 @@ export const Helper = WrappedComponent => {
       }
     }
     render () {
-      return <WrappedComponent {...this.props}
-        state={this.state}
-        setHelperElement={_e => this.helperElement = _e} />
+      return <WrappedComponent {...this.props} {...this.state}
+        setHelperElement={this.setHelperElement}
+        handleStepReset={this.handleStepReset} />
     }
   }
   return _Helper

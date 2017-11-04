@@ -77,8 +77,6 @@ export const Helper = WrappedComponent => {
               behavior: 'smooth',
               block: position === 'top' ? 'end' : 'start'
             })
-          //
-          console.log('WE FOUND IT !!!')
         })
       }
     }

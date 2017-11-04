@@ -43,9 +43,11 @@ export const Part = WrappedComponent => {
     _handleStepReset () {
     }
     _onNextClick (stepIndex) {
+      this.props.trackEvent('Part', 'nextClick')
       this.handleStepUpdate(this.props, stepIndex + 1)
     }
     _onPreviousClick (stepIndex) {
+      this.props.trackEvent('Part', 'previousClick')
       this.handleStepUpdate(this.props, stepIndex - 1)
     }
     componentWillMount () {
@@ -78,11 +80,14 @@ export const Part = WrappedComponent => {
     }
   }
   function mapStateToProps (state, ownProps) {
-    const { router: { location: { pathname } }, search } = state
+    const { router: { location: { pathname }, search },
+      tracking: { trackEvent }
+    } = state
     const visibleHelpers = getVisibleHelpers({ state, ownProps })
     return { pathname,
       search,
       stepIndex: parseInt(search.helperIndex),
+      trackEvent,
       visibleHelpers
     }
   }

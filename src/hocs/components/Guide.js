@@ -4,8 +4,9 @@ import { getGuideTutorial } from '../../reducers/guide'
 
 export const Guide = WrappedComponent => {
   function mapStateToProps (state) {
-    const { search } = state
-    const tutorial = search.tutorialName && getGuideTutorial(state, search.tutorialName)
+    const { router: { search } } = state
+    const tutorial = search.tutorialName &&
+      getGuideTutorial(state, search.tutorialName)
     return { tutorial }
   }
   return connect(mapStateToProps)(WrappedComponent)

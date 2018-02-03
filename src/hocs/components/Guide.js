@@ -1,13 +1,3 @@
-import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
-import { getGuideTutorial } from '../../reducers/guide'
-
-export const Guide = WrappedComponent => {
-  function mapStateToProps (state) {
-    const { router: { search } } = state
-    const tutorial = search.tutorialName &&
-      getGuideTutorial(state, search.tutorialName)
-    return { tutorial }
-  }
-  return connect(mapStateToProps)(WrappedComponent)
-}
+export const Guide = withRouter

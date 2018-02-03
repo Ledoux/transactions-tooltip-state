@@ -17,7 +17,7 @@
     "react-redux": "^5.0.3",
     "react-router-redux": "next",
     "redux": "^3.6.0",
-    "transactions-interface-state": "latest"
+    "transactions-redux-react": "latest"
   },
   "description": "In the framework of transactions, this is a frontend plugin that gives you smart reducers for your app state",
   "devDependencies": {

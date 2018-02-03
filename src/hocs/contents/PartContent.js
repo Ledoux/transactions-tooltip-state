@@ -2,17 +2,16 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
 import { createSelector } from 'reselect'
-import { getUpdatedSearchString } from 'transactions-interface-state'
+import { getUpdatedSearchString } from 'transactions-redux-react'
 
 const getVisibleHelpers = createSelector(
-  ({ state: { router: { location: { pathname } } } }) => pathname,
-  ({ ownProps: { helpers } }) => helpers,
-  (pathname, helpers) =>
-    helpers && helpers.filter(helper => helper.getIsVisible(pathname))
-)
+  ({ router: { location: { pathname } } }) => pathname,
+  (state, { helpers }) => helpers,
+  (pathname, helpers) => helpers && helpers.filter(helper =>
+      helper.pathname === pathname))
 
-export const Part = WrappedComponent => {
-  class _Part extends Component {
+export const PartContent = WrappedComponent => {
+  class _PartContent extends Component {
     constructor () {
       super ()
       this.state = { isPrevious: false }
@@ -43,11 +42,11 @@ export const Part = WrappedComponent => {
     _handleStepReset () {
     }
     _onNextClick (stepIndex) {
-      this.props.trackEvent('Part', 'nextClick')
+      this.props.trackEvent('PartContent', 'nextClick')
       this.handleStepUpdate(this.props, stepIndex + 1)
     }
     _onPreviousClick (stepIndex) {
-      this.props.trackEvent('Part', 'previousClick')
+      this.props.trackEvent('PartContent', 'previousClick')
       this.handleStepUpdate(this.props, stepIndex - 1)
     }
     componentWillMount () {
@@ -79,17 +78,16 @@ export const Part = WrappedComponent => {
         onPreviousClick={this.onPreviousClick} />
     }
   }
-  function mapStateToProps (state, ownProps) {
+  return connect((state, ownProps) => {
     const { router: { location: { pathname }, search },
       tracking: { trackEvent }
     } = state
-    const visibleHelpers = getVisibleHelpers({ state, ownProps })
+    const visibleHelpers = getVisibleHelpers(state, ownProps)
     return { pathname,
       search,
       stepIndex: parseInt(search.helperIndex),
       trackEvent,
       visibleHelpers
     }
-  }
-  return connect(mapStateToProps, { push })(_Part)
+  }, { push })(_PartContent)
 }

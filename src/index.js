@@ -1,2 +1,2 @@
 export * from './hocs/components'
-export * from './reducers/guide'
+export * from './hocs/contents'

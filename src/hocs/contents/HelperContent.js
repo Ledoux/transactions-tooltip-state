@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { findDOMNode } from 'react-dom'
 
-export const Helper = WrappedComponent => {
-  class _Helper extends Component {
+import { getViewerComponent } from 'transactions-interface-state'
+
+export const HelperContent = WrappedComponent => {
+  class _HelperContent extends Component {
     constructor () {
       super ()
       this.state = { hasScrolled: false,
@@ -97,5 +100,7 @@ export const Helper = WrappedComponent => {
         handleStepReset={this.handleStepReset} />
     }
   }
-  return _Helper
+  return connect((state, { contentName }) => ({
+    ContentComponent: getViewerComponent(state, 'content', contentName || 'boxes')
+  }))(_HelperContent)
 }
